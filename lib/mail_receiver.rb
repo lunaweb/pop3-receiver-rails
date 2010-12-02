@@ -24,6 +24,10 @@ class MailReceiver
   def from
     @mail.from
   end
+
+  def body
+    @mail.body
+  end
   
   def subject
     @mail.subject
