@@ -30,7 +30,7 @@ class MailReceiver
   end
 
   def body
-    @mail.body
+    @mail.unquoted_body
   end
   
   def subject
