@@ -25,6 +25,10 @@ class MailReceiver
     @mail.from
   end
 
+  def to
+    @mail.to
+  end
+
   def body
     @mail.body
   end
