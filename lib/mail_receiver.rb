@@ -42,20 +42,30 @@ class MailReceiver
   end
   
   def attachments
-    return [] unless @mail.has_attachments?
-    
+    atts = []
     @mail.parts.collect do |part|
-      if filename = part_filename(part)
-        {
-          :filename => filename,
-          :content_type => part.content_type,
-          :content => part.body
-        }
+      if part.multipart?
+        part.parts.each do |sub_part|
+          atts.push get_attachment(sub_part)
+        end
+      else
+        atts.push get_attachment(part)
       end
-    end.compact
+    end
+    atts.compact
   end
   
   private
+  
+  def get_attachment(part)
+    if filename = part_filename(part)
+      {
+        :filename => filename,
+        :content_type => part.content_type,
+        :content => part.body
+      }
+    end
+  end
   
   def part_filename(part)
     file_name = (part['content-location'] &&
@@ -76,8 +86,8 @@ module TMail
       if multipart?
         parts.each do |part|
           if part.multipart?
-            part.parts.each do |part2|
-              result = part2.unquoted_body if part2.content_type =~ /html/i
+            part.parts.each do |sub_part|
+              result = sub_part.unquoted_body if sub_part.content_type =~ /html/i
             end
           elsif !attachment?(part)
             result = part.unquoted_body if part.content_type =~ /html/i
@@ -94,8 +104,8 @@ module TMail
       if multipart?
         parts.each do |part|
           if part.multipart?
-            part.parts.each do |part2|
-              result = part2.unquoted_body if part2.content_type =~ /plain/i
+            part.parts.each do |sub_part|
+              result = sub_part.unquoted_body if sub_part.content_type =~ /plain/i
             end
           elsif !attachment?(part)
             result = part.unquoted_body if part.content_type =~ /plain/i
