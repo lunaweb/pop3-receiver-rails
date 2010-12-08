@@ -28,6 +28,10 @@ class MailReceiver
   def to
     @mail.to
   end
+
+  def date
+    @mail.date
+  end
   
   def body
     @mail.body_html || @mail.body_text
